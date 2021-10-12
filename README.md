@@ -1,1 +1,1 @@
-# Crypto_aasign2
+# Using gmpy library to generate large prime numbers to be used in RSA encryption. Message is first encrypted using Vigenere cipher. Then it is digitally signed by the sender's private key and then it is encrypted by receiver's public key.

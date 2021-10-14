@@ -44,6 +44,7 @@ def encryption():
 
     file=open("Vencrypted.txt" , 'w')
     file.write(encrypted)
+    return encrypted
 
 def decryption():
     key=readKey()
@@ -57,12 +58,20 @@ def decryption():
     decrypted="".join(decrypted)
     file=open("Vdecrypted.txt", 'w')
     file.write(decrypted)
+    return decrypted
 
+def decryptionWithParam(cipher, key):
+    key=setKey(cipher,key)
+    decrypted = []
 
+    for i in range(len(cipher)):
+        x=((ord(cipher[i])-ord(key[i]))%26 )+ ord('A')
+        decrypted.append(chr(x))
 
-
-
-
+    decrypted="".join(decrypted)
+    file=open("Vdecrypted.txt", 'w')
+    file.write(decrypted)
+    return decrypted
 
 
 encryption() 

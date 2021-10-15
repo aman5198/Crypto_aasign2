@@ -51,9 +51,9 @@ def getKeys(path):
 def check(first, second):
     for i in range(len(first)):
         if gmpy.mpz(first[i])!=gmpy.mpz(second[i]):
-            print(gmpy.mpz(first[i]))
-            print(gmpy.mpz(second[i]))
-            print(i)
+            # print(gmpy.mpz(first[i]))
+            # print(gmpy.mpz(second[i]))
+            # print(i)
             return False
     return True
 
@@ -71,8 +71,8 @@ def checkValidityOfKeys():
     key=key+"Z"
     messageBlocks, keyBlocks = createBlocks(viegenereMessage, key, blockSize, alphabets)
     
-    print(messageBlocks)
-    print(keyBlocks)
+    # print(messageBlocks)
+    # print(keyBlocks)
 
     n1, d1, p1, q1 = getKeys("PrivateA.txt")
     n1, e1, p1, q1 = getKeys("PublicA.txt")
@@ -99,8 +99,8 @@ def checkValidityOfKeys():
     res1 = (check(message1,messageBlocks))
     res2 = (check(key1,keyBlocks))
 
-    print(message1)
-    print(key1)
+    # print(message1)
+    # print(key1)
 
     return (res1 and res2)
 
@@ -108,6 +108,7 @@ n=256
 generateAndWriteA(n)
 generateAndWriteB(n)
 while checkValidityOfKeys()==False:
-    
+    print("GeneratingKeys...")
     generateAndWriteA(n)
     generateAndWriteB(n)
+print("----------------KEYS GENERATED----------------")

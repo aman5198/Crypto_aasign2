@@ -18,12 +18,14 @@ def getKeys(path):
 
 def detransform(text, blockSize, alphabets):
     start=0
+    text=text.strip(' ')
     end=blockSize
     textBlocks=[]
+    #print(len(text))
     for i in range(len(text)):
         x=text[start:end]
-        #print(start,"   ",end,"   ",x)
-        x=x.strip(' ')
+        #print(start,"   ",end,"   ",x,"   ",len(x),"   ",len(x.strip()))
+        x=x.strip()
         p=gmpy.mpz(x,base=26).digits(10)
         textBlocks.append(p)
         i=end
@@ -32,7 +34,6 @@ def detransform(text, blockSize, alphabets):
         if i>=len(text):
             break
     return textBlocks
-
 
 def check(first, second):
     for i in range(len(first)):
@@ -72,32 +73,49 @@ def vigenereDecryption(listOfBlocks):
 
     return string
 
+def checkValidityOfMessage(messageToVerify2, messageEncrypted):
+    for i in range(len(messageToVerify2)-1):
+        if gmpy.mpz(messageToVerify2[i])!=gmpy.mpz(messageEncrypted[i]):
+            print(messageToVerify2[i])
+            print(messageEncrypted[i])
+            print(i)
+            return -1
+    return 1
+
 def main():
     data = open("messageToSend.txt",'r').readlines()
     message = (data[0])
     key = (data[2])
+
+    KeyToVerify=data[8]
+    keyToVerify=KeyToVerify.strip()
+    blockSizeForVerification=int(data[6])
     # print(message)
     # print(key)
     blockSize = int(data[4])
     alphabets=26
-    message=message.strip('\n')
+    message=message.strip('\n').strip(' ')
     key=key.strip('\n')
     
-    messageToDecrypt = detransform(message, blockSize, alphabets)
-    keyToDecrypt = detransform(key, blockSize, alphabets)
+    messageToUnsign = detransform(message, blockSize, alphabets)
+    keyToUnsign = detransform(key, blockSize, alphabets)
 
-    # print(messageToDecrypt)
-    # print(keyToDecrypt)
-
+    keyToVerify2 = detransform(keyToVerify, blockSizeForVerification, alphabets)
+    
     n1, e1, p1, q1 = getKeys("PublicA.txt")
 
     n2, d2, p2, q2 = getKeys("PrivateB.txt")
 
-    messageDecrypted = encrypt(messageToDecrypt, n2, d2)
-    keyDecrypted = encrypt(keyToDecrypt, n2, d2)
+    messageEncrypted = encrypt(messageToUnsign, n1, e1)
+    keyEncrypted = encrypt(keyToUnsign, n1, e1)
 
-    message1 = encrypt(messageDecrypted, n1, e1)
-    key1 = encrypt(keyDecrypted, n1, e1)
+    if checkValidityOfMessage(keyToVerify2, keyEncrypted)==1:
+        print("Verified! The message was sent by the sender A!")
+    else:
+        print("The message has been tapered.")
+
+    message1 = encrypt(messageEncrypted, n2, d2)
+    key1 = encrypt(keyEncrypted, n2, d2)
 
     # print(message1)
     # print(key1)

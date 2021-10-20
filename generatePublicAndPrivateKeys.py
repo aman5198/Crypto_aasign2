@@ -58,8 +58,8 @@ def check(first, second):
     return True
 
 def checkValidityOfKeys():
-    key = readKey()
-    message = readMessage()
+    key = "TEST"
+    message = "HELLOTHISISFORTESTING"
 
     viegenereMessage = encryption() 
 
@@ -80,21 +80,21 @@ def checkValidityOfKeys():
     n2, d2, p2, q2 = getKeys("PrivateB.txt")
     n2, e2, p2, q2 = getKeys("PublicB.txt")
 
-    messageSigned = encrypt(messageBlocks, n1, d1)
-    keySigned = encrypt(keyBlocks, n1, d1)
+    messageSigned = encrypt(messageBlocks, n2, e2)
+    keySigned = encrypt(keyBlocks, n2, e2)
 
     #Digitally signing the message and key has been done. Now we encrypt the message using receiver's public key
 
-    messageEncrypted = encrypt(messageSigned, n2, e2)
-    keyEncrypted = encrypt(keySigned, n2, e2)
+    messageEncrypted = encrypt(messageSigned, n1, d1)
+    keyEncrypted = encrypt(keySigned, n1, d1)
 
     #Message has been encrypted using receiver's public key. Now we have to transform it back into letters.
 
-    messageDecrypted = encrypt(messageEncrypted, n2, d2)
-    keyDecrypted = encrypt(keyEncrypted, n2, d2)
+    messageDecrypted = encrypt(messageEncrypted, n1, e1)
+    keyDecrypted = encrypt(keyEncrypted, n1, e1)
 
-    message1 = encrypt(messageDecrypted, n1, e1)
-    key1 = encrypt(keyDecrypted, n1, e1)
+    message1 = encrypt(messageDecrypted, n2, d2)
+    key1 = encrypt(keyDecrypted, n2, d2)
 
     res1 = (check(message1,messageBlocks))
     res2 = (check(key1,keyBlocks))

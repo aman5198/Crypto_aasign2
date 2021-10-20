@@ -51,12 +51,10 @@ def getKeys(path):
 def transform(listOfBlocks, alphabets, blockSize):
     s= ""
     for i in listOfBlocks:
-        q=i.digits(26)
-        
-        rem=blockSize-len(q)
-        q=" "*rem+q
-        #print(len(q),"    ",q)
-        s=s+str(q)
+        q=gmpy.mpz(str(i), base=10).digits(26)
+        #print(i, "----->", q, "----->", gmpy.mpz(str(q),base=26).digits(10))
+        rem=blockSize-len(str(q))
+        s=s+" "*rem+str(q)
     return s
 
 def detransform(text, blockSize, alphabets):
@@ -66,6 +64,9 @@ def detransform(text, blockSize, alphabets):
     for i in range(len(text)):
         x=text[start:end]
         p=gmpy.mpz(x,base=26).digits(10)
+        x=x.strip()
+        x=x.strip('\n')
+        #print(x,"----->",p,"----->",gmpy.mpz(p).digits(26)) 
         textBlocks.append(p)
         i=end
         start=end
@@ -89,7 +90,7 @@ def main():
     lengthOfKey=len(key)
     
     message = readMessage()
-
+    #print(key, message)
     viegenereMessage = encryption() 
 
     data = open("blockSize.txt",'r').readlines()
@@ -107,26 +108,26 @@ def main():
 
     n2, e2, p2, q2 = getKeys("PublicB.txt")
     
-    messageSigned = encrypt(messageBlocks, n1, d1)
-    keySigned = encrypt(keyBlocks, n1, d1)
+    messageEncrypted = encrypt(messageBlocks, n2, e2)
+    keyEncrypted = encrypt(keyBlocks, n2, e2)
 
     #Digitally signing the message and key has been done. Now we encrypt the message using receiver's public key
 
-    messageEncrypted = encrypt(messageSigned, n2, e2)
-    keyEncrypted = encrypt(keySigned, n2, e2)
+    messageSigned = encrypt(messageEncrypted, n1, d1)
+    keySigned = encrypt(keyEncrypted, n1, d1)
 
     # print(messageEncrypted)
     # print(keyEncrypted)
 
     #Message has been encrypted using receiver's public key. Now we have to transform it to send.
 
-    for i in messageEncrypted:
+    for i in messageSigned:
         if blockSize<(gmpy.num_digits(gmpy.mpz(i),alphabets)):
             blockSize = (gmpy.num_digits(gmpy.mpz(i),alphabets))
     #print(blockSize)
 
-    messageTransformed = transform(messageEncrypted, alphabets, blockSize)
-    keyTransformed = transform(keyEncrypted, alphabets, blockSize)
+    messageTransformed = transform(messageSigned, alphabets, blockSize)
+    keyTransformed = transform(keySigned, alphabets, blockSize)
 
     print("The Message to be sent is:\n",messageTransformed)
     print("The Key to be sent is:\n",keyTransformed)
@@ -137,8 +138,23 @@ def main():
     f.write(keyTransformed)
     f.write("\n\n")
     f.write(str(blockSize))
+    
+    #Digitally signing the message and key has been done. Now we encrypt the message using receiver's public key
+    
+    blockSize=5
+    for i in keyEncrypted:
+        if blockSize<(gmpy.num_digits(gmpy.mpz(i),alphabets)):
+            blockSize = (gmpy.num_digits(gmpy.mpz(i),alphabets))
+    print(blockSize)
+    KeyToVerify = transform(keyEncrypted, alphabets, blockSize).strip()
+    
+    f.write("\n\n")
+    f.write(str(blockSize))
+    f.write("\n\n")
+    f.write(KeyToVerify)
     f.close()
 
     print("\nMessage has been digitally signed and encrypted using RSA cryptosystem.\n")
+
 
 main()

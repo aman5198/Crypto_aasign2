@@ -7,7 +7,10 @@ def readKey():
 
 def readMessage():
     data=open("KwithM.txt",'r').readlines()
-    message=data[1].upper()
+    data=data[1:]
+    message=""
+    for d in data:
+        message=message+d.upper()
     messageCheck=list([val for val in message if val.isalpha()])
     message="".join(messageCheck)
     return message
